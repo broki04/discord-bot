@@ -2,6 +2,7 @@ import {
   Collection,
   GuildMember,
   Interaction,
+  MessageFlags,
   PermissionResolvable,
 } from 'discord.js';
 
@@ -21,7 +22,7 @@ export default {
       ) {
         return interaction.reply({
           content: '❌ You do not have permission to use this command!',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }
@@ -41,7 +42,7 @@ export default {
         const left = ((expiration - now) / 1000).toFixed(1);
         return interaction.reply({
           content: `⏳ Please wait **${left}s** before using this command again.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }
@@ -56,7 +57,7 @@ export default {
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
           content: '❌ There was an error while executing this command!',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }
