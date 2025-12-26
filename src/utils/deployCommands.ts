@@ -32,7 +32,11 @@ function generateHash(data: any): string {
   return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
 }
 
-export async function deployCommands() {
+export async function deployCommands(
+  clientId: string,
+  guildIds: string[] = [],
+  deployGlobal = false,
+) {
   const commands = getCommandsData();
   const currentHash = generateHash(commands);
 
@@ -53,13 +57,17 @@ export async function deployCommands() {
     process.env.DISCORD_TOKEN as string,
   );
 
-  await rest.put(
-    Routes.applicationGuildCommands(
-      process.env.CLIENT_ID!,
-      process.env.GUILD_ID!,
-    ),
-    { body: commands },
-  );
+  for (const guildId of guildIds) {
+    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+      body: commands,
+    });
+    console.log(`✅ Deployed slash commands to guild ${guildId}`);
+  }
+
+  if (deployGlobal) {
+    await rest.put(Routes.applicationCommands(clientId), { body: commands });
+    console.log(`✅ Deployed slash commands globally`);
+  }
 
   fs.writeFileSync(HASH_FILE, JSON.stringify({ hash: currentHash }, null, 2));
   console.log(`✅ Slash commands synchronized successfully.`);

@@ -12,10 +12,14 @@ const client = new Client({
 
 loadCommands(client);
 
+const clientId = process.env.CLIENT_ID!;
+const guildIds = process.env.GUILD_IDS?.split(',') || [];
+const deployGlobal = process.env.DEPLOY_GLOBAL === 'true';
+
 client.on(Events.InteractionCreate, interactionCreate.execute);
 
 client.once(Events.ClientReady, async () => {
-  await deployCommands();
+  await deployCommands(clientId, guildIds, deployGlobal);
 
   console.log(`🤖 Logged in as ${client.user?.tag}`);
 });
