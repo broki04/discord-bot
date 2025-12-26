@@ -11,7 +11,7 @@ const command: Command = {
     .setDescription("Replies with 'pong!'."),
 
   async execute(interaction) {
-    await interaction.reply('pong');
+    await interaction.reply('pong kurwa');
   },
 };
 
