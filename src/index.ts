@@ -1,14 +1,17 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
+import loadCommands from './handlers/commandHandler';
+import dotenv from 'dotenv';
 
-import * as dotenv from 'dotenv';
 dotenv.config();
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
 });
 
+loadCommands(client);
+
 client.once(Events.ClientReady, (c) => {
-  console.log(`Discord bot is ready! Logged in as ${c.user.tag}.`);
+  console.log(`🤖 Logged in as ${c.user?.tag}`);
 });
 
 client.login(process.env.token);
