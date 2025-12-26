@@ -1,11 +1,10 @@
-import { Client, Collection } from 'discord.js';
-import fs from 'fs';
 import path from 'path';
+import fs from 'fs';
 import { Command } from '../types/Command';
+import { REST, Routes } from 'discord.js';
 
-export default function loadCommands(client: Client) {
-  client.commands = new Collection();
-  client.cooldowns = new Collection();
+export async function deployCommands() {
+  const commands: any[] = [];
 
   const commandsPath = path.join(__dirname, '..', 'commands');
   const categories = fs.readdirSync(commandsPath);
@@ -19,11 +18,20 @@ export default function loadCommands(client: Client) {
     for (const file of files) {
       const filePath = path.join(categoryPath, file);
       const command: Command = require(filePath).default;
-
-      client.commands.set(command.data.name, command);
-      console.log(`➡️ Loaded command: /${command.data.name} from ${file}`);
+      commands.push(command.data.toJSON());
     }
   }
 
-  console.log(`✅ Loaded ${client.commands.size} commands.`);
+  const rest = new REST({ version: '10' }).setToken(
+    process.env.DISCORD_TOKEN as string,
+  );
+
+  await rest.put(
+    Routes.applicationGuildCommands(
+      process.env.CLIENT_ID!,
+      process.env.GUILD_ID!,
+    ),
+    { body: commands },
+  );
+  console.log(`✅ Successfully deployed ${commands.length} commands.`);
 }

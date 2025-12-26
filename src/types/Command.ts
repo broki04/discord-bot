@@ -7,7 +7,7 @@ import {
 export interface Command {
   data: SlashCommandBuilder;
   category: string;
-  permission?: PermissionResolvable[];
+  permissions?: PermissionResolvable[];
   cooldown?: number;
   execute(interaction: ChatInputCommandInteraction): Promise<void>;
 }
