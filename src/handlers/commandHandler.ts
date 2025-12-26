@@ -7,7 +7,7 @@ export default function loadCommands(client: Client) {
   client.commands = new Collection();
   client.cooldowns = new Collection();
 
-  const commandsPath = path.join(__dirname, '..', 'commands');
+  const commandsPath = path.join(process.cwd(), 'src', 'commands');
   const categories = fs.readdirSync(commandsPath);
 
   for (const category of categories) {
@@ -21,7 +21,6 @@ export default function loadCommands(client: Client) {
       const command: Command = require(filePath).default;
 
       client.commands.set(command.data.name, command);
-      console.log(`➡️ Loaded command: /${command.data.name} from ${file}`);
     }
   }
 

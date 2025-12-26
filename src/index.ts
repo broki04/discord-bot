@@ -14,10 +14,10 @@ loadCommands(client);
 
 client.on(Events.InteractionCreate, interactionCreate.execute);
 
-client.once(Events.ClientReady, async (c) => {
+client.once(Events.ClientReady, async () => {
   await deployCommands();
 
-  console.log(`🤖 Logged in as ${c.user?.tag}`);
+  console.log(`🤖 Logged in as ${client.user?.tag}`);
 });
 
 client.login(process.env.DISCORD_TOKEN);
