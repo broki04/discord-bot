@@ -1,9 +1,4 @@
-import {
-  SlashCommandBuilder,
-  ChatInputCommandInteraction,
-  EmbedBuilder,
-} from 'discord.js';
-import { Command } from '../../types/Command';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 
 const cmGifs: { range: [number, number]; url: string }[] = [
   {
@@ -28,32 +23,18 @@ const cmGifs: { range: [number, number]; url: string }[] = [
   },
 ];
 
-const command: Command = {
-  category: 'fun',
-  permissions: [],
-  cooldown: 5,
+export async function cmCommand(interaction: ChatInputCommandInteraction) {
+  const length = Math.floor(Math.random() * 31);
 
-  data: new SlashCommandBuilder()
-    .setName('cm')
-    .setDescription(
-      'Sprawdzasz długość swojego fiflaka 🍆💦👅',
-    ) as SlashCommandBuilder,
+  const gif =
+    cmGifs.find((g) => length >= g.range[0] && length <= g.range[1])?.url ??
+    cmGifs[0].url;
 
-  async execute(interaction: ChatInputCommandInteraction) {
-    const length = Math.floor(Math.random() * 31);
-
-    const gif =
-      cmGifs.find((g) => length >= g.range[0] && length <= g.range[1])?.url ??
-      cmGifs[0].url;
-
-    const embed = new EmbedBuilder()
-      .setTitle('Fiut detector 📏')
-      .setDescription(`${interaction.user} ma ${length}cm fiflaka 🍆`)
-      .setColor('Random')
-      .setImage(gif)
-      .setTimestamp();
-    await interaction.reply({ embeds: [embed] });
-  },
-};
-
-export default command;
+  const embed = new EmbedBuilder()
+    .setTitle('Fiut detector 📏')
+    .setDescription(`${interaction.user} ma ${length}cm fiflaka 🍆`)
+    .setColor('Random')
+    .setImage(gif)
+    .setTimestamp();
+  await interaction.reply({ embeds: [embed] });
+}

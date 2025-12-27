@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
 
 loadCommands(client);
@@ -19,9 +19,9 @@ const deployGlobal = process.env.DEPLOY_GLOBAL === 'true';
 client.on(Events.InteractionCreate, interactionCreate.execute);
 
 client.once(Events.ClientReady, async () => {
-  await deployCommands(clientId, guildIds, deployGlobal);
-
   console.log(`🤖 Logged in as ${client.user?.tag}`);
+
+  await deployCommands(clientId, guildIds, deployGlobal);
 });
 
 client.login(process.env.DISCORD_TOKEN);

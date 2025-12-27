@@ -14,7 +14,12 @@ export default function loadCommands(client: Client) {
     const categoryPath = path.join(commandsPath, category);
     const files = fs
       .readdirSync(categoryPath)
-      .filter((f) => f.endsWith('.ts') || f.endsWith('.js'));
+      .filter((f) => f === 'index.ts' || f === 'index.js');
+
+    if (!files.length) {
+      console.warn(`⚠️ No index file found in category folder: ${category}`);
+      continue;
+    }
 
     for (const file of files) {
       const filePath = path.join(categoryPath, file);

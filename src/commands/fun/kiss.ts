@@ -1,10 +1,9 @@
 import {
-  SlashCommandBuilder,
   ChatInputCommandInteraction,
   EmbedBuilder,
   MessageFlags,
+  User,
 } from 'discord.js';
-import { Command } from '../../types/Command';
 
 const kissGifs = [
   'https://media.giphy.com/media/G3va31oEEnIkM/giphy.gif',
@@ -14,42 +13,23 @@ const kissGifs = [
   'https://media.giphy.com/media/zkppEMFvRX5FC/giphy.gif',
 ];
 
-const command: Command = {
-  category: 'fun',
-  permissions: [],
-  cooldown: 5,
+export async function kissCommand(
+  interaction: ChatInputCommandInteraction,
+  target: User,
+) {
+  const gif = kissGifs[Math.floor(Math.random() * kissGifs.length)];
 
-  data: new SlashCommandBuilder()
-    .setName('kiss')
-    .setDescription('Całujesz kogoś 😘😘😘')
-    .addUserOption((option) =>
-      option
-        .setName('target')
-        .setDescription('Użytkownik którego checsz przelizać 👅')
-        .setRequired(true),
-    ) as SlashCommandBuilder,
+  let isKissingSelf: boolean = target.id === interaction.user.id;
+  let description: string = isKissingSelf
+    ? `${interaction.user} przelizał(a) się sam(a) ze sobą 💋`
+    : `${interaction.user} przelizał(a) się z <@${target.id}> 💋`;
 
-  async execute(interaction: ChatInputCommandInteraction) {
-    const target = interaction.options.getUser('target', true);
-    if (target.id === interaction.user.id) {
-      await interaction.reply({
-        content: '💋 Ty narcyzie checsz siebie pocałować xddd',
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
+  const embed = new EmbedBuilder()
+    .setTitle('Buziaczek 😘')
+    .setDescription(description)
+    .setImage(gif)
+    .setColor('Random' as any)
+    .setTimestamp();
 
-    const gif = kissGifs[Math.floor(Math.random() * kissGifs.length)];
-
-    const embed = new EmbedBuilder()
-      .setTitle('Kiss 😘')
-      .setDescription(`${interaction.user} przelizał(a) się z ${target} 💋`)
-      .setImage(gif)
-      .setColor('Random')
-      .setTimestamp();
-
-    await interaction.reply({ embeds: [embed] });
-  },
-};
-
-export default command;
+  await interaction.reply({ embeds: [embed] });
+}

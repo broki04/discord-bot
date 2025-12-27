@@ -1,9 +1,4 @@
-import {
-  SlashCommandBuilder,
-  ChatInputCommandInteraction,
-  EmbedBuilder,
-} from 'discord.js';
-import { Command } from '../../types/Command';
+import { ChatInputCommandInteraction, EmbedBuilder, User } from 'discord.js';
 
 const iqObjects: {
   range: [number, number];
@@ -32,37 +27,23 @@ const iqObjects: {
   },
 ];
 
-const command: Command = {
-  category: 'fun',
-  permissions: [],
-  cooldown: 5,
+export async function iqCommand(
+  interaction: ChatInputCommandInteraction,
+  user: User,
+) {
+  const iq = Math.floor(Math.random() * 201);
 
-  data: new SlashCommandBuilder()
-    .setName('iq')
-    .setDescription('Zobaczmy jak bardzo jesteś zjebany 🤓')
-    .addUserOption((o) =>
-      o.setName('target').setDescription('Komu chcesz zajrzeć do musku 😈'),
-    ) as SlashCommandBuilder,
+  const iq_type =
+    iqObjects.find((o) => iq >= o.range[0] && iq <= o.range[1]) ?? iqObjects[0];
 
-  async execute(interaction: ChatInputCommandInteraction) {
-    const user = interaction.options.getUser('target') || interaction.user;
-    const iq = Math.floor(Math.random() * 201);
+  const embed = new EmbedBuilder()
+    .setTitle('IQ test 🤓')
+    .setDescription(
+      `${user} ma iq (**${iq}**) na poziomie ${iq_type.description}.`,
+    )
+    .setColor('Random')
+    .setImage(iq_type.url)
+    .setTimestamp();
 
-    const iq_type =
-      iqObjects.find((o) => iq >= o.range[0] && iq <= o.range[1]) ??
-      iqObjects[0];
-
-    const embed = new EmbedBuilder()
-      .setTitle('IQ test 🤓')
-      .setDescription(
-        `${user} ma iq (**${iq}**) na poziomie ${iq_type.description}.`,
-      )
-      .setColor('Random')
-      .setImage(iq_type.url)
-      .setTimestamp();
-
-    await interaction.reply({ embeds: [embed] });
-  },
-};
-
-export default command;
+  await interaction.reply({ embeds: [embed] });
+}

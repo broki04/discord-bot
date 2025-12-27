@@ -16,7 +16,7 @@ function getCommandsData() {
     const categoryPath = path.join(commandsPath, category);
     const files = fs
       .readdirSync(categoryPath)
-      .filter((f) => f.endsWith('.ts') || f.endsWith('.js'));
+      .filter((f) => f === 'index.ts' || f === 'index.js');
 
     for (const file of files) {
       const filePath = path.join(categoryPath, file);
