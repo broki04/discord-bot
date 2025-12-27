@@ -6,7 +6,6 @@ import { kissCommand } from './kiss';
 import { getRandomMember } from '../../utils/getRandomMember';
 
 const command: Command = {
-  category: 'fun',
   permissions: [],
   cooldown: 5,
 
