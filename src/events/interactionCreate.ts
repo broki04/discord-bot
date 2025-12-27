@@ -21,7 +21,7 @@ export default {
         !member.permissions.has(command.permissions as PermissionResolvable[])
       ) {
         return interaction.reply({
-          content: '❌ You do not have permission to use this command!',
+          content: '❌ Nie posiadasz permisji, aby używać tej komendy!',
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -41,7 +41,7 @@ export default {
       if (now < expiration) {
         const left = ((expiration - now) / 1000).toFixed(1);
         return interaction.reply({
-          content: `⏳ Please wait **${left}s** before using this command again.`,
+          content: `⏳ Odczekaj **${left}s** przed ponownym użyciem tej komendy.`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -56,7 +56,7 @@ export default {
 
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
-          content: '❌ There was an error while executing this command!',
+          content: '❌ Wystąpił błąd przy próbie aktywowania komendy!',
           flags: MessageFlags.Ephemeral,
         });
       }

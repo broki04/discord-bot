@@ -1,9 +1,10 @@
-import { SlashCommandBuilder, User } from 'discord.js';
+import { MessageFlags, SlashCommandBuilder, User } from 'discord.js';
 import { Command } from '../../types/Command';
 import { cmCommand } from './cm';
 import { iqCommand } from './iq';
 import { kissCommand } from './kiss';
 import { getRandomMember } from '../../utils/getRandomMember';
+import { shipCommand } from './ship';
 
 const command: Command = {
   permissions: [],
@@ -62,43 +63,78 @@ const command: Command = {
         ),
     )
     .addSubcommand((sub) =>
-      sub.setName('test').setDescription('debug komenda kurwa mac'),
+      sub
+        .setName('ship')
+        .setDescription('Czy pasujecie do siebie? Zaraz zobaczymy 💦')
+        .addUserOption((o) =>
+          o.setName('target').setDescription('Wybierz użytkownika'),
+        )
+        .addStringOption((o) =>
+          o.setName('thing').setDescription('Jakaś rzecz'),
+        ),
     ) as SlashCommandBuilder,
 
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
-    console.log('subcommend called: ', sub);
 
     switch (sub) {
       case 'cm':
-      case 'fiut':
+      case 'fiut': {
         await cmCommand(interaction);
-        break;
+        return;
+      }
 
       case 'iq':
-      case 'inteligencja':
+      case 'inteligencja': {
         await iqCommand(
           interaction,
           interaction.options.getUser('target') ?? interaction.user,
         );
-        break;
+        return;
+      }
 
       case 'kiss':
       case 'buziak':
-      case 'calus':
+      case 'calus': {
+        if (!interaction.guild) return;
+
+        const targetUser =
+          interaction.options.getUser('target') ??
+          (await getRandomMember(interaction.guild, true)) ??
+          interaction.user;
+        await kissCommand(interaction, targetUser);
+        return;
+      }
+
+      case 'love':
+      case 'ship':
+      case 'milosc': {
         if (!interaction.guild) return;
 
         const targetOption = interaction.options.getUser('target');
+        const targetThing = interaction.options.getString('thing');
 
-        let targetUser = targetOption;
-        if (!targetUser) {
-          targetUser =
-            (await getRandomMember(interaction.guild, true)) ??
-            interaction.user;
+        if (targetOption && targetThing) {
+          await interaction.reply({
+            content:
+              '❌ Musisz wybrać **osobę**, albo **rzecz** - nie obydwa na raz!',
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
         }
 
-        await kissCommand(interaction, targetUser);
-        break;
+        const targetUser: User =
+          targetOption ??
+          (await getRandomMember(
+            interaction.guild,
+            true,
+            interaction.user.id,
+          )) ??
+          interaction.user;
+
+        await shipCommand(interaction, targetUser, targetThing);
+        return;
+      }
     }
   },
 };

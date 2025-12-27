@@ -2,6 +2,7 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
   EmbedBuilder,
+  User,
 } from 'discord.js';
 import { Command } from '../../types/Command';
 
@@ -37,40 +38,28 @@ const shipObject: {
   },
 ];
 
-const command: Command = {
-  category: 'fun',
-  permissions: [],
-  cooldown: 5,
-  data: new SlashCommandBuilder()
-    .setName('ship')
-    .setDescription('Czy pasujecie do siebie? Zaraz zobaczymy 💦')
-    .addUserOption((o) => o.setName('user').setDescription('Jakiś gościu'))
-    .addStringOption((o) =>
-      o.setName('thing').setDescription('Jakaś rzecz'),
-    ) as SlashCommandBuilder,
+export async function shipCommand(
+  interaction: ChatInputCommandInteraction,
+  user: User,
+  thing: string | null,
+) {
+  const target: string =
+    thing ??
+    (user.id === interaction.user.id ? 'z samym sobą' : `<@${user.id}>`);
+  const percent = Math.floor(Math.random() * 101);
 
-  async execute(interaction: ChatInputCommandInteraction) {
-    const user = interaction.options.getUser('user');
-    const thing = interaction.options.getString('thing');
+  const ship_expert =
+    shipObject.find((o) => percent >= o.range[0] && percent <= o.range[1]) ??
+    shipObject[0];
 
-    let target: string = user ? `<@${user.id}>` : thing ? thing : 'samym sobą';
-    const percent = Math.floor(Math.random() * 101);
+  const embed = new EmbedBuilder()
+    .setTitle('Kalkulator miłości 💕')
+    .setDescription(
+      `${interaction.user} 💞 ${target}\n\nZgodność: **${percent}%**\nKomentarz od eksperta: ${ship_expert.description}`,
+    )
+    .setColor('Random')
+    .setImage(ship_expert.url)
+    .setTimestamp();
 
-    const love_type =
-      shipObject.find((o) => percent >= o.range[0] && percent <= o.range[1]) ??
-      shipObject[0];
-
-    const embed = new EmbedBuilder()
-      .setTitle('Kalkulator miłości 💕')
-      .setDescription(
-        `${interaction.user} 💞 ${target}\nZgodność: **${percent}%**\nKomentarz od eksperta: ${love_type.description}`,
-      )
-      .setColor('Random')
-      .setImage(love_type.url)
-      .setTimestamp();
-
-    await interaction.reply({ embeds: [embed] });
-  },
-};
-
-export default command;
+  await interaction.reply({ embeds: [embed] });
+}
